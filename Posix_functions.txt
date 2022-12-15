@@ -1,0 +1,326 @@
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+int getopt(int argc, char * const argv[],const char *optstring);
+
+extern char *optarg;
+extern int optind, opterr, optopt;
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <getopt.h>
+
+int getopt_long(int argc, char * const argv[],const char *optstring,const struct option *longopts, int *longindex);
+int getopt_long_only(int argc, char * const argv[], const char *optstring, const struct option *longopts, int *longindex);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <locale.h>
+char* setlocale( int category, const char* locale );
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+char *getcwd(char *buf, size_t size);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+int chdir(const char *path);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+task_struct (files) ---> files_struct (fdt) ---> fdtable (fd) --->  file * türünden bir dizi ---> file
+
+proses kontrol block ---> betimleyici tablosu --> dosya nesneleri (Kısaca) 
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <fcntl.h>
+
+int open(const char *path, int flags, ...);
+
+
+    O_RDONLY
+    O_WRONLY
+    O_RDWR
+    
+    S_IRUSR
+    S_IWUSR
+    S_IXUSR
+    S_IRGRP
+    S_IWGRP
+    S_IXGRP
+    S_IROTH
+    S_IWOTH
+    S_IXOTH
+    
+    S_IRWXU
+    S_IRWXG
+    S_IRWXO
+
+    #define S_IRWXU (S_IRUSR|S_IWUSR|S_IXUSR)
+    #define S_IRWXG (S_IRGRP|S_IWGRP|S_IXGRP)
+    #define S_IRWXO (S_IROTH|S_IWOTH|S_IXOTH)
+    
+    S_IRWXU             0700        
+    S_IRUSR             0400 
+    S_IWUSR             0200 
+    S_IXUSR             0100 
+    S_IRWXG             070 
+    S_IRGRP             040 
+    S_IWGRP             020 
+    S_IXGRP             010 
+    S_IRWXO             07 
+    S_IROTH             04 
+    S_IWOTH             02 
+    S_IXOTH             01 
+    S_ISUID             04000 
+    S_ISGID             02000 
+    S_ISVTX             01000
+    
+    S_IRUSR        100 000 000
+    S_IWUSR        010 000 000
+    S_IXUSR        001 000 000
+
+    S_IRGRP        000 100 000
+    S_IWGRP        000 010 000
+    S_IXGRP        001 001 000
+
+    S_IROTH        000 000 100
+    S_IWOTH        000 010 010
+    S_IXOTH        001 001 001
+    
+    
+    Standart C fopen                    POSIX
+    "w"                                 O_WRONLY|O_CREAT|O_TRUNC
+    "w+"                                O_RDWR|O_CREAT|O_TRUNC
+    "r"                                 O_RDONLY
+    "r+"                                O_RDWR
+    "a"                                 O_WRONLY|O_CREAT|O_APPEND
+    "a+"                                O_RDWR|O_CREAT|O_APPEND
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <fcntl.h>
+
+int creat(const char *path, mode_t mode);
+
+int creat(const char *path, mode_t mode)
+{
+return open(path, O_WRONLY|O_CREAT|O_TRUNC, mode);
+}
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+ssize_t read(int fd, void *buf, size_t nbyte);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+ssize_t write(int fd, const void *buf, size_t nbyte);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+off_t lseek(int fd, off_t offset, int whence);
+
+SEEK_SET
+SEEK_CUR
+SEEK_END
+
+lseek(fd, 0, SEEK_END);
+    
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <sys/stat.h>
+
+mode_t umask(mode_t cmask);
+
+   mode_t mode;
+
+   mode = umask(0);
+   umask(mode);
+   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <sys/stat.h>
+
+int stat(const char *path, struct stat *buf);
+int fstat(int fd, struct stat *buf);
+int lstat(const char *path, struct stat *buf);
+
+struct stat {
+        dev_t     st_dev;         /* ID of device containing file */
+        ino_t     st_ino;         /* Inode number */
+        mode_t    st_mode;        /* File type and mode */
+        nlink_t   st_nlink;       /* Number of hard links */
+        uid_t     st_uid;         /* User ID of owner */
+        gid_t     st_gid;         /* Group ID of owner */
+        dev_t     st_rdev;        /* Device ID (if special file) */
+        off_t     st_size;        /* Total size, in bytes */
+        blksize_t st_blksize;     /* Block size for filesystem I/O */
+        blkcnt_t  st_blocks;      /* Number of 512B blocks allocated */
+
+        /* Since Linux 2.6, the kernel supports nanosecond
+            precision for the following timestamp fields.
+            For the details before Linux 2.6, see NOTES. */
+
+        struct timespec st_atim;  /* Time of last access */
+        struct timespec st_mtim;  /* Time of last modification */
+        struct timespec st_ctim;  /* Time of last status change */
+
+    #define st_atime st_atim.tv_sec      /* Backward compatibility */
+    #define st_mtime st_mtim.tv_sec
+    #define st_ctime st_ctim.tv_sec
+    };
+
+   struct timespec {
+        time_t  tv_sec;      
+        long    tv_nsec;
+    };
+
+
+    S_ISBLK(m)      Blok aygıt sürücü dosyası mı? (ls -l'de 'b' dosya türü)
+    S_ISCHR(m)      Karakter aygıt sürücü dosyası mı? (ls -l'de 'c' dosya türü)
+    S_ISDIR(m)      Dizin dosyası mı? (ls -l'de 'd' dosya türü)
+    S_ISFIFO(m)     Boru dosyası mı? (ls -l'de 'p' dosya türü)
+    S_ISREG(m)      Sıradan bir disk dosyası mı? (ls -l'de '-' dosya türü)
+    S_ISLNK(m)      Sembolik bağlantı dosyası mı? (ls -l'de 'l' dosya türü)
+    S_ISSOCK(m)     Soket dosyası mı? (ls -l'de 's' dosya türü)
+	
+    S_IFBLK         Blok aygıt dosyası
+    S_IFCHR         Karakter aygıt dosyası
+    S_IFIFO         Boru dosyası
+    S_IFREG         Sıradan disk dosyası
+    S_IFDIR         Dizin dosyası
+    S_IFLNK         Sembolik bağlantı dosyası
+    S_IFSOCK        Soket dosyası
+    
+    S_IFMT
+    
+    (mode & S_IFMT) == S_IFXXX
+
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+
+#include <stdio.h>
+
+int remove(const char *path);       
+
+#include <unistd.h>
+
+int unlink(const char *path);
+
+    
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <sys/stat.h>
+
+int chmod(const char *path, mode_t mode);
+int fchmod(int fd, mode_t mode);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <stdio.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[])
+{
+	#ifdef _POSIX_CHOWN_RESTRICTED
+	 	printf("chown restricted\n");
+	#else
+		printf("chown not restricted\n");
+	#endif
+
+	return 0;
+}
+
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+int chown(const char *path, uid_t owner, gid_t group);  
+fchown(int fd, uid_t owner, gid_t group);   
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <sys/stat.h>
+
+int mkdir(const char *path, mode_t mode);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+int rmdir(const char *path);  
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <pwd.h>
+
+struct passwd *getpwnam(const char *name);
+struct passwd *getpwuid(uid_t uid);
+
+
+struct passwd {
+        char   *pw_name;       /* username */
+        char   *pw_passwd;     /* user password */
+        uid_t   pw_uid;        /* user ID */
+        gid_t   pw_gid;        /* group ID */
+        char   *pw_gecos;      /* user information */
+        char   *pw_dir;        /* home directory */
+        char   *pw_shell;      /* shell program */
+    };
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <pwd.h>
+
+struct passwd *getpwent(void);
+void setpwent(void);
+void endpwent(void);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <grp.h>
+
+struct group *getgrnam(const char *name);
+struct group *getgrgid(gid_t gid);
+struct group *getgrent(void);
+void setgrent(void);
+void endgrent(void);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
