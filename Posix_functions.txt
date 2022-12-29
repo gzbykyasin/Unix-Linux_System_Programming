@@ -421,13 +421,18 @@ int nftw(const char *path, int (*fn)(const char *, const struct stat *, int, str
 
 	FTW_CHDIR: Eğer bu bayrak belirtilirse fonksiyon her dizine geçtiğinde prosesin çalışma dizinini de o dizin olarak değiştirmektedir. 
 
-	FTW_DEPTH: Normalde dolaşım "pre-order" biçimde yapılmaktadır. Bu bayrak girilirse "post-order" dolaşım yapılır. Bayrağın ismi yanlış 	verilmiştir. "pre-order" dolaşım demek bir dizin ile karşılaşıldığında önce dizin girişinin ele alnıması sonra özyineleme yapılması demektir. "post-order" dolaşım ise önce özyineleme yapılıp sonra dizin girişinin ele alınması demektir. Defaul durum "pre-order" dolaşım biçimindedir. 
+	FTW_DEPTH: Normalde dolaşım "pre-order" biçimde yapılmaktadır. Bu bayrak girilirse "post-order" dolaşım yapılır. Bayrağın ismi 
+	yanlış 	verilmiştir. "pre-order" dolaşım demek bir dizin ile karşılaşıldığında önce dizin girişinin ele alnıması sonra özyineleme
+	yapılması demektir. "post-order" dolaşım ise önce özyineleme yapılıp sonra dizin girişinin ele alınması demektir.
+	Default durum "pre-order" dolaşım biçimindedir. 
 
 	FTW_MOUNT: Bu bayrak belirtilirse özyineleme yapılırken bir "mount point" ile karşılaşılırsa o dosya sistemine girilmez. Default durumda 
 	özyineleme sırasında bir "mount point" ile kaşılaşılırsa özyineleme o dosya sisteminin içime girilerek devam ettirilmektedir. 
 
 	FTW_PHYS:  Default durumda nftw fonksiyonu bir sembolik link dosyası ile karşılaştığında linki izler ve link'in hedefine
-	yönelik hareket eder. Daha önce bir böyle bir durumun sonsuz döngüye yol açabileceğinden bahsetmiştik. Bu nedenle biz özyinelemede stat 	fonksiyonu yerine lstat fonksiyonunu kullanmıştık. İşte bu bayrak belirtilirse artık nftw fonksiyonu sembolik link dosyası ile karşılaştığında link'i izlemez, 	sembolik link dosyasının kendisi hakkında bilgi verir. 
+	yönelik hareket eder. Daha önce bir böyle bir durumun sonsuz döngüye yol açabileceğinden bahsetmiştik. Bu nedenle biz özyinelemede 
+	stat fonksiyonu yerine lstat fonksiyonunu kullanmıştık. İşte bu bayrak belirtilirse artık nftw fonksiyonu sembolik link dosyası
+	ile karşılaştığında link'i izlemez, sembolik link dosyasının kendisi hakkında bilgi verir. 
 
 
 
