@@ -463,8 +463,11 @@ int callback(const char *path, const struct stat *finfo, int flag, struct FTW *f
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 
+#define _GNU_SOURCE             /* See feature_test_macros(7) */
+#include <unistd.h>
 
-
+int euidaccess(const char *pathname, int mode);
+int eaccess(const char *pathname, int mode);
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
