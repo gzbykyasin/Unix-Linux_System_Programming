@@ -413,9 +413,55 @@ int scandir(const char *dir, struct dirent ***namelist, int (*sel)(const struct 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 
+#define _XOPEN_SOURCE 500
+
+#include <ftw.h>
+
+int nftw(const char *path, int (*fn)(const char *, const struct stat *, int, struct FTW *), int fd_limit, int flags);
+
+FTW_CHDIR: Eğer bu bayrak belirtilirse fonksiyon her dizine geçtiğinde prosesin çalışma dizinini de o dizin olarak değiştirmektedir. 
+
+FTW_DEPTH: Normalde dolaşım "pre-order" biçimde yapılmaktadır. Bu bayrak girilirse "post-order" dolaşım yapılır. Bayrağın ismi yanlış verilmiştir. 
+"pre-order" dolaşım demek bir dizin ile karşılaşıldığında önce dizin girişinin ele alnıması sonra özyineleme yapılması demektir. "post-order" dolaşım ise
+önce özyineleme yapılıp sonra dizin girişinin ele alınması demektir. Defaul durum "pre-order" dolaşım biçimindedir. 
+
+FTW_MOUNT: Bu bayrak belirtilirse özyineleme yapılırken bir "mount point" ile karşılaşılırsa o dosya sistemine girilmez. Default durumda 
+özyineleme sırasında bir "mount point" ile kaşılaşılırsa özyineleme o dosya sisteminin içime girilerek devam ettirilmektedir. 
+
+FTW_PHYS:  Default durumda nftw fonksiyonu bir sembolik link dosyası ile karşılaştığında linki izler ve link'in hedefine
+yönelik hareket eder. Daha önce bir böyle bir durumun sonsuz döngüye yol açabileceğinden bahsetmiştik. Bu nedenle biz özyinelemede stat fonksiyonu yerine
+lstat fonksiyonunu kullanmıştık. İşte bu bayrak belirtilirse artık nftw fonksiyonu sembolik link dosyası ile karşılaştığında link'i izlemez, 
+sembolik link dosyasının kendisi hakkında bilgi verir. 
+
+
+
+
+
+int callback(const char *path, const struct stat *finfo, int flag, struct FTW *ftw);
+
+struct FTW {
+	int base;
+	int level;
+};
+
+FTW_D: Bulunan giriş bir dizin girişidir.
+
+FTW_DNR: Bulunan giriş bir dizin girişidir. Ancak bu dizin'in içi okunamamaktadır. Dolayısıyla bu dizin özyinelemede dolaşılamayacaktır.
+
+FTW_DP: Post-order dolaşımda bir dizinle karşılaşıldığında bayrak FTW_D yerine FTW_DP olarak set edilmektedir. 
+
+FTW_F: Bulunan dizin girişi sıradan bir dıosyadır (regular file).
+
+FTW_NS: Bulunan dizin girişi için stat ya da lstat fonksiyonu başarısız olmuştur. Dolayısıyla fonksiyona geçirilen stat yapısı da
+anlamlı değildir. 
+
+FTW_SL: Bulunan giriş bir sembolik bağlantı dosyasına ilişkindir. Sembolik bağlantı dosyasının hedefi mevcuttur. 
+
+FTW_SLN: Bulunan giriş bir sembolik bağlantı dosyasına ilişkindir. Sembolik bağlantı dosyasının hedefi mevcut değildir ("danging klink" durumu). 
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
+
 
 
 
