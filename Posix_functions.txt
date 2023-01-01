@@ -25,6 +25,14 @@ char* setlocale( int category, const char* locale );
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 
+#include <stdio.h> 
+
+void perror(const char *str);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+
 #include <unistd.h>
 
 char *getcwd(char *buf, size_t size);
@@ -118,7 +126,7 @@ int creat(const char *path, mode_t mode);
 
 int creat(const char *path, mode_t mode)
 {
-return open(path, O_WRONLY|O_CREAT|O_TRUNC, mode);
+	return open(path, O_WRONLY|O_CREAT|O_TRUNC, mode);
 }
 
 // ---------------------------------------------------------------------------
@@ -146,7 +154,7 @@ SEEK_SET
 SEEK_CUR
 SEEK_END
 
-lseek(fd, 0, SEEK_END);
+ör : lseek(fd, 0, SEEK_END);
     
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
@@ -181,9 +189,8 @@ struct stat {
         blksize_t st_blksize;     /* Block size for filesystem I/O */
         blkcnt_t  st_blocks;      /* Number of 512B blocks allocated */
 
-        /* Since Linux 2.6, the kernel supports nanosecond
-            precision for the following timestamp fields.
-            For the details before Linux 2.6, see NOTES. */
+        /* Since Linux 2.6, the kernel supports nanosecond precision for the following timestamp fields.
+           For the details before Linux 2.6, see NOTES. */
 
         struct timespec st_atim;  /* Time of last access */
         struct timespec st_mtim;  /* Time of last modification */
@@ -233,6 +240,8 @@ int remove(const char *path);
 
 int unlink(const char *path);
 
+remove'da unlink'te aynı işi yapıyor.
+remove C fonksiyonudur. unlink ise POSIX fonksionudur
     
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
@@ -400,6 +409,7 @@ fonksiyonunda kullanırsak yol ifadesini düzenlememize gerek kalmaz. Aşağıda
 
 long telldir(DIR *dirp);
 void seekdir(DIR *dirp, long loc);
+void rewinddir(DIR *dirp);
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
@@ -409,6 +419,8 @@ void seekdir(DIR *dirp, long loc);
 int alphasort(const struct dirent **d1, const struct dirent **d2);
 int scandir(const char *dir, struct dirent ***namelist, int (*sel)(const struct dirent *),
 	int (*compar)(const struct dirent **, const struct dirent **));  
+	
+int cmp(const struct **direnet1, const struct **dirent2); -> biz yazdık bunu
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
@@ -418,6 +430,7 @@ int scandir(const char *dir, struct dirent ***namelist, int (*sel)(const struct 
 #include <ftw.h>
 
 int nftw(const char *path, int (*fn)(const char *, const struct stat *, int, struct FTW *), int fd_limit, int flags);
+
 
 	FTW_CHDIR: Eğer bu bayrak belirtilirse fonksiyon her dizine geçtiğinde prosesin çalışma dizinini de o dizin olarak değiştirmektedir. 
 
@@ -438,7 +451,7 @@ int nftw(const char *path, int (*fn)(const char *, const struct stat *, int, str
 
 
 
-int callback(const char *path, const struct stat *finfo, int flag, struct FTW *ftw);
+int callback(const char *path, const struct stat *finfo, int flag, struct FTW *ftw);  -> biz yazdık
 
 	struct FTW {
 		int base;
@@ -459,6 +472,56 @@ int callback(const char *path, const struct stat *finfo, int flag, struct FTW *f
 	FTW_SL: Bulunan giriş bir sembolik bağlantı dosyasına ilişkindir. Sembolik bağlantı dosyasının hedefi mevcuttur. 
 
 	FTW_SLN: Bulunan giriş bir sembolik bağlantı dosyasına ilişkindir. Sembolik bağlantı dosyasının hedefi mevcut değildir ("danging klink" durumu). 
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+int link(const char *oldpath, const char *newpath);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <fcntl.h>
+
+int linkat(int fd1, const char *path1, int fd2, const char *path2, int flag);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+int symlink(const char *path1, const char *path2);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <fcntl.h>
+
+int symlinkat(const char *path1, int fd, const char *path2);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+ssize_t readlink(const char *path, char *buf, size_t bufsize);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+int access(const char *path, int amode) 
+
+	Fonksiyonun birinci parametresi erişim testinin yapılacağı dosyanın yol ifadesini belirtmektedir. İkinci parametresi test edilecek 
+	erişimi belirtir. Bu parametre aşağıdaki sembolik sabitlerin bir düzeyinde OR'lanmasıyla oluşturulabilir:
+
+	R_OK: Okuma yapılabilir mi?
+	W_OK: Yazma yapılabilir mi?
+	X_OK: Çalıştırılabilir mi?
+	F_OK: Dosya var mı?
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
