@@ -561,3 +561,17 @@ int dup2(int fildes, int fildes2);
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 
+IO yönlendirmesi kabuk üzerinden de yapılabilmektedir. Kabukta ">" sembolü 1 numaralı betimleyicinin yönlendirileceği anlamına gelmektedir.
+						   
+Kabuk üzerinde "<" sembolü de 0 numaralı betimleyiciyi yönlendirmektedr.						   
+						   
+Aslında kabukta genel olarak yönlendirme için "n>" ve "n<" sembolleri de kullanılabilmektedir. Buradaki n betimleyicinin 
+numarasını belirtir. Bu sayede biz herhangi bir betimleyiciyi okuma ve yazma amaçlı bir dosyaya yönlendirebiliriz.
+ÖR: ./sample 2> test.txt
+
+Tabii hem stdout dosyasını hem de stdin dosyasını kabuk üzerinden birlikte de yönlendirebiliriz. 
+ÖR: ./sample > out.txt < in.txt
+							   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------						   
+
