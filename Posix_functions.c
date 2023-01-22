@@ -575,3 +575,202 @@ Tabii hem stdout dosyasını hem de stdin dosyasını kabuk üzerinden birlikte 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------						   
 
+<unistd.h> dosyasında okunabilirliği artırmak için şu sembolik sabitler bildirilmiştir:
+
+#define STDIN_FILENO        0
+#define STDOUT_FILENO       1
+#define STDERR_FILENO       2
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+ IO yönlendirmesi kabuk üzerinden de yapılabilmektedir. Kabukta ">" sembolü 1 numaralı betimleyicinin yönlendirileceği anlamına gelmektedir. Örneğin:
+
+./sample > test.txt
+
+Bu durumda kabuk önce ">" sembolünün sağındaki dosyayı O_WRONLY|O_TRUNC modunda açar. Sonra ./sample programını çalıştırarak bu 
+prosesin 1 numaralı betimleyicisini dup2 fonksiyonu ile bu dosyaya yönlendirir. Böylece ./sample sample programının ekrana yazdığını
+zannettiği ieşyle bu dosyaya yazılmış olacaktır. 
+
+ls gibi, cat gibi kabuk komutlarının da aslında birer program olduğuna bunların da 1 numaralı betimleyiciyi kullanarak yazdırma 
+yaptığına dikkat ediniz. Örneğimn biz kabuk üzerinde şu komutu uygulayabiliriz:
+
+ls -l > test.txt
+
+Eğer kabulta ">" yerine ">>" sembolü kullanılırsa bu durumda ">>" sembolünün sağındaki dosya O_CREAT|O_WRONLY|O_APPEND modunda 
+açılmaktadır. Yani dosya varsa bu durumda olan dosyanın sonuna ekleme yapılacaktır. Örneğin:
+
+ls -l >> test.txt						   
+
+Kabuk üzerinde "<" sembolü de 0 numaralı betimleyiciyi yönlendirmektedr. Örneğin:
+
+./sample < test.txt
+
+Burada kabuk "test.txt" dosyasını O_RDONLY modda açar. Sonra ./sample programını çalıştırır. Prosesin 0 numaralı betimleyicisini
+"test.txt" dosyasına dup2 fonksiyonuyla yönlendirir. Böylece rpogram sanki klavyeden okuduğunu sanırken aslında dosyadan okuma
+yapacaktır.
+
+
+Aslında kabukta genel olarak yönlendirme için "n>" ve "n<" sembolleri de kullanılabilmektedir. Buradaki n betimleyicinin 
+numarasını belirtir. Bu sayede biz herhangi bir betimleyiciyi okuma ve yazma amaçlı bir dosyaya yönlendirebiliriz. Örneğin:
+
+./sample 2> test.txt
+
+Burada "test.txt" dosyası açılıp ./sample programının "stderr" olarak isimlendirilen 2 numaralı betimleyicisi bu dosyaya 
+yönlendirilecektir. 
+
+Kabuk programları ">", "<", "n>" "n<" gibi yönlendirmeleri nasıl yapmaktadır? Bu konu ileride ele alınacaktır. Kabuk önce bir kez
+fork işlemi yapar. Sonra yönlendirme işlemini gerçekleştirir. Sonra da exec işlemi yapmaktadır.
+						   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+Komut satırındaki diğer önemli bir işlem de "boru (pipe)" işlemidir. Boru işlemi "|" ile temsil edilmektedir. Kabul üzerinden
+aşağıdaki gibi bir komut uygulamış olalım:
+
+a | b
+
+Burada kabuk bu yazıyı "|" karakterindne parse eder. "|" karakterinin solundaki ve sağındakileri birer program olarak ele alır. 
+Her iki programı da çalışırır. Yani burada "a" programı da "b" programı da çalıştırılacaktır. "a" programının "stdout" dosyasına
+yazdıklarını "b" programı "stdin" dosyasından okuyacaktır. Başka bir deyişle "a" programının 1 numaralı betimeyiciyle yaptuığı write 
+işlemlerini "b" programı 0 numaralı betimleyici ile read fonksiyonunu kullanarak okuyabilecektir. Kabuk boru işlemlerini
+"prosesler arası haberleşme yöntemlerindne biri olan boru haberleşmesi ile" gerçekleştirmektedir. Zaten ilerleyen bölümlerde 
+bu konu ele alınacaktır. 
+
+Tabii boru işlemi yapılırken programların komut satırı arümanları da verilebilir. Örneğin:
+
+a b c | d e f
+
+Burada aslında çalıştırılacak programlar "a" ve "d" programlarıdır. Diğerleri bunların komut satırı argümanlarıdır. 
+
+Aşağıdaki örnekte "a" programı ekrana (stdout dosyasına) 0'dan 10'a kadar sayıları yazdırmaktadır. "b" programı ise
+döngü içerisinde klavyeden (stdin dosyasından) değer okuyup ekrana yazdırmaktadır. Bu iki programı aşağıdkai gibi çalıştıralım:
+
+./a | ./b
+						   
+						   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <stdio.h>
+
+int fileno(FILE *stream);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <stdio.h>
+
+FILE *fdopen(int fd, const char *mode);
+						   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <stdio.h>
+
+void setbuf(FILE *stream, char *buf);
+						   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <stdio.h>
+
+int setvbuf(FILE *stream, char *buf, int mode, size_t size);
+						   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+void clear_stdin(void)
+{
+	int ch;
+	while ((ch = getchar()) != '\n' && ch != EOF)
+	    ;
+}
+
+						   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <stdio.h>
+
+int getchar(void);
+char *gets(char *s);
+char *gets_s(char *s, rsize_t n);
+char *fgets(char *s, size_t n, FILE *f);
+int scanf(const char *format, ...);
+int getc(FILE *stream);
+int ungetc(int c, FILE *stream);
+
+						   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+pid_t getpid(void);
+						   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+
+#include <unistd.h>
+
+pid_t getppid(void);
+						   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+pid_t fork(void);    				   
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <unistd.h>
+
+void _exit(int status);
+						   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <stdlib.h>
+
+void exit(int status);
+						   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+						   
+#include <sys/wait.h>
+
+pid_t wait(int *wstatus);
+						   
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+#include <sys/wait.h>
+
+pid_t waitpid(pid_t pid, int *stat_loc, int options);
+
+Fonksiyonun birinci parametresi beklenecek alt prosesin proses id değerini belirtir. Bu sayede programcı belli bir alt prosesi bekleyebilmektedir. 
+Bu birinci parametre aslına birkaç biçimde geçilebilmektedir. Eğer bu parametre negatif bir proses id değeri olarak geçilirse 
+bu durumda fonksiyon proses grup id'si bu değerin pozitifi olan herhangi bir alt prosesi beklemektedir. Eğer bu parametre -1 
+olarak geçilirse bu durumda fonksiyon tamamen wait fonksiyonundaki gibi davranmaktadır. Yani herhangi bir alt prosesi beklemektedir.
+Eğer bu parametre 0 olarak geçilirse fonksiyon proses grup id'si waitpid fonksiyonunu çağıran prosesin id'si ile yanı olan 
+herhangi bir alt prosesi beklemektedir. Tabii normal olarak bu parametreye programcı pozitif olan bir proses id geçer. Bu durumda
+fonksiyon  o alt prosesi bekleyecektir. (Tabii bu parametreye geçilen proses id o prosesin bir alt prosesi değilse fonksiyon yine
+başarısız olmaktadır.) Fonksiyonun ikinci parametresi exit bilgisinin yerleştirileceği int türden nesnesnin adresini alır. Üçüncü 
+parametre bazı özel değerlerin bit düzeyinde OR'lanmasıyla oluşturulabilmektedir:
+
+WNOHANG: Bu durumda waitpid eğer alt proses henüz sonlanmamışsa bekleme yapmaz, başarısızlıkla sonuçlanır. 
+WCONTINUED, WUNTRACED: Bu bayrakların açıklaması burada yapılmayacaktır. 
+
+Tabii bu üçüncü parametre genellikle 0 geçilmektedir. 0 geçilmesi bu bayraklardan hiçbirinin kullanılmayacağı anlamına gelmektedir. 
+O halde aslında wait(&status) çağrısı ile waitpid(-1, &status, 0) eşdeğerdir. 
+
+waitpid fonksiyonunda da ikinci parametre NULL adres geçilebilir. Bu durumda proses beklenir ama exit bilgileri elde edilmez. 
+
+waitpid fonksiyonu da başarı durumunda beklenen proses id değeri ile başarısızlık durumunda -1 değeriyle geri dönmektedir. 
+
+
+						   
